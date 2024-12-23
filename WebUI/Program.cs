@@ -1,3 +1,7 @@
+using BusinessLayer;
+using DataAccessLayer;
+using EntitiyLayer;
+
 namespace WebUI
 {
     public class Program
@@ -8,6 +12,10 @@ namespace WebUI
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+
+            builder.Services.AddScoped<ArticleManager>();
+            builder.Services.AddScoped<ElasticsearchService>();
+            builder.Services.AddScoped<WebCrawlerService>();
 
             var app = builder.Build();
 
