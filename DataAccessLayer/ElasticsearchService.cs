@@ -2,9 +2,6 @@
 using Nest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer
 {
@@ -15,28 +12,67 @@ namespace DataAccessLayer
         public ElasticsearchService()
         {
             var settings = new ConnectionSettings(new Uri("http://localhost:9200"))
-                .DefaultIndex("articles");
+                .DefaultIndex("articles")
+                .DisableDirectStreaming();  // Hata ayıklama için gereklidir
             _client = new ElasticClient(settings);
         }
 
         public void IndexArticles(List<Article> articles)
         {
-            foreach (var article in articles)
+            try
             {
-                var response = _client.IndexDocument(article);
-                if (!response.IsValid)
+                foreach (var article in articles)
                 {
-                    Console.WriteLine($"Error indexing article: {response.OriginalException.Message}");
+                    var indexRequest = new IndexRequest<Article>(article, "articles", "_doc", article.Id);
+                    var indexResponse = _client.Index(indexRequest);
+                    if (!indexResponse.IsValid)
+                    {
+                        Console.WriteLine($"Hata indeksleme işlemi sırasında: {indexResponse.DebugInformation}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Article indexed: Title = {article.Title}, URL = {article.Url}, PublishDate = {article.PublishDate}");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Veri indeksleme sırasında bir hata oluştu: {ex.Message}");
             }
         }
 
+
         public List<Article> SearchArticles(string query)
         {
-            var searchResponse = _client.Search<Article>(s => s
-                .Query(q => q.QueryString(d => d.Query($"*{query}*"))));
+            try
+            {
+                var searchResponse = _client.Search<Article>(s => s
+                    .Query(q => q.MultiMatch(m => m
+                        .Fields(f => f.Field(p => p.Title).Field(p => p.Url))
+                        .Query(query)
+                    )));
 
-            return searchResponse.Documents.ToList();
+                Console.WriteLine($"Search Query: {query}");
+                if (searchResponse.HitsMetadata != null)
+                {
+                    Console.WriteLine($"Total Hits: {searchResponse.HitsMetadata.Total}");
+                    foreach (var hit in searchResponse.Hits)
+                    {
+                        Console.WriteLine($"Found Article: Title = {hit.Source.Title}, URL = {hit.Source.Url}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Search Response Metadata is null.");
+                }
+
+                return searchResponse.Documents.ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Arama sırasında hata oluştu: {ex.Message}");
+                return new List<Article>();
+            }
         }
     }
 }

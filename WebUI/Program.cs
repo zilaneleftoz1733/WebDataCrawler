@@ -6,8 +6,17 @@ namespace WebUI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
+
         {
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri("http://localhost:9200");
+            //    var response = await client.GetAsync("/articles/_search");
+            //    var result = await response.Content.ReadAsStringAsync();
+            //    Console.WriteLine(result);
+            //}
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -26,6 +35,8 @@ namespace WebUI
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

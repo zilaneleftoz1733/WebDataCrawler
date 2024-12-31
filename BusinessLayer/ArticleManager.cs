@@ -2,9 +2,6 @@
 using EntitiyLayer.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLayer
 {
@@ -29,16 +26,13 @@ namespace BusinessLayer
         {
             try
             {
-                // Elasticsearch'ten tüm makaleleri al
                 return _elasticsearch.SearchArticles(string.Empty);  // Tüm makaleleri almak için boş bir arama sorgusu kullanabilirsiniz.
             }
             catch (Exception ex)
             {
-                // Hata durumunda bir hata mesajı döndürülmesi
                 throw new Exception("Makale verileri alınırken hata oluştu.", ex);
             }
         }
-
 
         public List<Article> Search(string query)
         {

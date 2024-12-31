@@ -6,21 +6,38 @@
 
 <h1>Haberler</h1>
 
+<!-- Arama Kutusu -->
+<form method="get">
+    <input type="text" name="query" placeholder="Arama Yap" value="@HttpContext.Request.Query["query"]" />
+    <button type="submit">Ara</button>
+</form>
+
+<!-- Veri Çekme Butonu -->
 <form method="post">
     <button type="submit">Veri Çek ve Kaydet</button>
 </form>
 
-<form method="get">
-    <input type="text" name="query" placeholder="Arama Yap" />
-    <button type="submit">Ara</button>
-</form>
+<!-- Hata Mesajı -->
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div style="color:red; margin-top:10px;">@Model.ErrorMessage</div>
+}
 
-<ul>
-    @foreach (var article in Model.Articles)
-    {
-        <li>
-            <a href="@article.Url" target="_blank">@article.Title</a>
-            (@article.PublishDate)
-        </li>
-    }
-</ul>
+<!-- Makale Listesi -->
+@if (Model.Articles != null && Model.Articles.Count > 0)
+{
+    <h2>Makale Listesi</h2>
+    <ul>
+        @foreach (var article in Model.Articles)
+        {
+            <li>
+                <a href="@article.Url" target="_blank">@article.Title</a>
+                <small>(Yayın Tarihi: @article.PublishDate.ToString("yyyy-MM-dd HH:mm"))</small>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>Henüz veri bulunmamaktadır.</p>
+}
