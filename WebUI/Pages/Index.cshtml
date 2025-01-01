@@ -6,24 +6,23 @@
 
 <h1>Haberler</h1>
 
-<!-- Arama Kutusu -->
 <form method="get">
     <input type="text" name="query" placeholder="Arama Yap" value="@HttpContext.Request.Query["query"]" />
     <button type="submit">Ara</button>
 </form>
 
-<!-- Veri Çekme Butonu -->
+
 <form method="post">
     <button type="submit">Veri Çek ve Kaydet</button>
 </form>
 
-<!-- Hata Mesajı -->
+
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div style="color:red; margin-top:10px;">@Model.ErrorMessage</div>
 }
 
-<!-- Makale Listesi -->
+
 @if (Model.Articles != null && Model.Articles.Count > 0)
 {
     <h2>Makale Listesi</h2>
